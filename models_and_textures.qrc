@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>models/duck/duck.obj</file>
+        <file>models/teapot/teapot.obj</file>
+        <file>models/goblin.obj</file>
+        <file>textures/RTR-ist-super-4-3.png</file>
+    </qresource>
+</RCC>
