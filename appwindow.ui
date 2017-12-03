@@ -96,6 +96,26 @@
                  <string>Teapot</string>
                 </property>
                </item>
+               <item>
+                <property name="text">
+                 <string>Goblin</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Torus</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Cessna</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Yoda</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>

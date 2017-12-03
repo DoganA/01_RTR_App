@@ -4,5 +4,8 @@
         <file>models/teapot/teapot.obj</file>
         <file>models/goblin.obj</file>
         <file>textures/RTR-ist-super-4-3.png</file>
+        <file>models/cessna.obj</file>
+        <file>models/torus.obj</file>
+        <file>models/yoda/yoda.obj</file>
     </qresource>
 </RCC>

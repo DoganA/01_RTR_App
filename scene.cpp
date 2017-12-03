@@ -64,12 +64,22 @@ void Scene::makeNodes()
     red->phong.k_ambient = red->phong.k_diffuse * 0.3f;
     red->phong.shininess = 80;
 
+    auto goblin_Material = std::make_shared<PhongMaterial>(phong_prog);
+    phongMaterials_["goblin_Material"] = goblin_Material;
+    goblin_Material->phong.k_diffuse = QVector3D(0.8f,0.6f,0.1f);
+    goblin_Material->phong.k_ambient = red->phong.k_diffuse * 0.4f;
+    goblin_Material->phong.shininess = 90;
+
     // which material to use as default for all objects?
     auto std = red;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
+    meshes_["Goblin"]  = std::make_shared<Mesh>(":/models/goblin.obj", goblin_Material);
+    meshes_["Yoda"]    = std::make_shared<Mesh>(":/models/yoda/yoda.obj", std);
+    meshes_["Torus"]    = std::make_shared<Mesh>(":/models/torus.obj", std);
+    meshes_["Cessna"]    = std::make_shared<Mesh>(":/models/cessna.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
@@ -79,6 +89,11 @@ void Scene::makeNodes()
     nodes_["Cube"]    = createNode(meshes_["Cube"], true);
     nodes_["Duck"]    = createNode(meshes_["Duck"], true);
     nodes_["Teapot"]  = createNode(meshes_["Teapot"], true);
+    nodes_["Goblin"]  = createNode(meshes_["Goblin"], true);
+    nodes_["Yoda"]    = createNode(meshes_["Yoda"], true);
+    nodes_["Torus"]    = createNode(meshes_["Torus"], true);
+    nodes_["Cessna"]    = createNode(meshes_["Cessna"], true);
+
 
 }
 
@@ -105,8 +120,6 @@ void Scene::makeScene()
     nodes_["Light0"]->transformation.translate(QVector3D(0, 1, 0));
 
 }
-
-
 
 // this method is called implicitly by the Qt framework when a redraw is required.
 void Scene::draw()
@@ -172,8 +185,9 @@ void Scene::draw_scene_()
 }
 
 // helper to load shaders and create programs
-shared_ptr<QOpenGLShaderProgram>
-Scene::createProgram(const string& vertex, const string& fragment, const string& geom)
+shared_ptr<QOpenGLShaderProgram> Scene::createProgram(const string& vertex,
+                                                      const string& fragment,
+                                                      const string& geom)
 {
     auto p = make_shared<QOpenGLShaderProgram>();
     if(!p->addShaderFromSourceFile(QOpenGLShader::Vertex, vertex.c_str()))
@@ -192,9 +206,8 @@ Scene::createProgram(const string& vertex, const string& fragment, const string&
 
 // helper to make a node from a mesh, and
 // scale the mesh to standard size 1 of desired
-shared_ptr<Node>
-Scene::createNode(shared_ptr<Mesh> mesh,
-                  bool scale_to_1)
+shared_ptr<Node> Scene::createNode(shared_ptr<Mesh> mesh,
+                                   bool scale_to_1)
 {
     QMatrix4x4 transform;
     if(scale_to_1) {
@@ -204,7 +217,6 @@ Scene::createNode(shared_ptr<Mesh> mesh,
 
     return make_shared<Node>(mesh,transform);
 }
-
 
 void Scene::toggleAnimation(bool flag)
 {
