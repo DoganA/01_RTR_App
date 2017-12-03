@@ -131,6 +131,25 @@
               <number>0</number>
              </property>
              <item>
+              <widget class="QComboBox" name="comboBox">
+               <item>
+                <property name="text">
+                 <string>phong</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>toon</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>dot</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
               <widget class="QWidget" name="widget_2" native="true">
                <layout class="QGridLayout" name="gridLayout">
                 <property name="leftMargin">
@@ -266,14 +285,21 @@
       <item>
        <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>left/right: rotate camera</string>
+         <string>left/right: rotate camera on y-axis</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_12">
         <property name="text">
-         <string>up/down: zoom</string>
+         <string>up/down: rotate camera on x-axis</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>+/-: Zoom the Object</string>
         </property>
        </widget>
       </item>

@@ -136,6 +136,7 @@ void Scene::draw()
 
     // set time uniform in animated shader(s)
     float t = millisec_since_first_draw.count() / 1000.0f;
+
     for(auto mat : phongMaterials_)
         mat.second->time = t;
 
