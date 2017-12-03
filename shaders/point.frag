@@ -33,7 +33,6 @@ in vec3 normal_EC;
 // output: fragment/pixel color
 out vec4 outColor;
 
-
 uniform PhongMaterial phong;
 uniform vec3 ambientLightIntensity;
 
@@ -49,7 +48,7 @@ vec3 color;
  *  Calculate surface color based on Phong illumination model.silhoullette
  */
 
-vec3 myphong(vec3 n, vec3 v, vec3 l) {
+vec3 myphong(vec3 normalDir/*n*/, vec3 viewDir/*v*/, vec3 lightDir /*l*/) {
     vec3 ambientColor;
     vec3 diffuseColor;
     //mod(foo, dichte) < radius
@@ -70,7 +69,7 @@ vec3 myphong(vec3 n, vec3 v, vec3 l) {
     diffuseColor = changeColor ? texture.backgroundColor : phong.k_diffuse;
 
     // cosine of angle between light and surface normal.
-    float ndotl = dot(n,l);
+    float ndotl = dot(normalDir,lightDir);
 
     // ambient / emissive part
     vec3 ambient = vec3(0,0,0);
@@ -87,10 +86,10 @@ vec3 myphong(vec3 n, vec3 v, vec3 l) {
     vec3 diffuse =  diffuseColor * light.intensity * ndotl;
 
     // reflected light direction = perfect reflection direction
-    vec3 r = reflect(-l,n);
+    vec3 r = reflect(-lightDir,normalDir);
 
     // cosine of angle between reflection dir and viewing dir
-    float rdotv = max( dot(r,v), 0.0);
+    float rdotv = max( dot(r,viewDir), 0.0);
 
     // specular contribution + gloss map
     vec3 specular = phong.k_specular * light.intensity * pow(rdotv, phong.shininess);

@@ -1,21 +1,27 @@
 #pragma once
-
+//-----------------------------------------------------------------------------
+// Basic Librarys
+#include <memory> // std::unique_ptr
+#include <map>    // std::map
+#include <chrono> // clock, time calculations
+//-----------------------------------------------------------------------------
+// QT Library
 #include <QWidget>
-
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QTimer>
 #include <QOpenGLFramebufferObject>
-
+//-----------------------------------------------------------------------------
+// QT Library
 #include "node.h"
 #include "camera.h"
 #include "material/phong.h"
+#include "material/toon.h"
+#include "material/point.h"
 #include "navigator/rotate_y.h"
 
-#include <memory> // std::unique_ptr
-#include <map>    // std::map
-#include <chrono> // clock, time calculations
+
 
 /*
  * OpenGL-based scene. Required objects are created in the constructor,
@@ -46,6 +52,23 @@ public slots:
     // change the node to be rendered in the scene
     void setSceneNode(QString node);
 
+// own created functions <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    QString getCurrentSceneNode();
+
+    void setShader(QString shader);
+    void enableSilhoutte(bool enable);
+    void setThreshold(float threshold);
+    void setAmountOfDiscretiz(int amount);
+
+    void setRedIntensity(float redIntensitiy);
+    void setGreenIntensity(float greenIntensitiy);
+    void setBlueIntensity(float blueIntensitiy);
+    void setRadius(float radius);
+    void setDensity(float density);
+    void revertPoint(bool revert);
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     // change background color
     void setBackgroundColor(QVector3D rgb);
 
@@ -72,11 +95,17 @@ public slots:
 
     // adjust camera / viewport / ... if drawing surface changes
     void updateViewport(size_t width, size_t height);
+    void setRotateAxis(RotateY::Axis axis);
+
 
 protected:
 
     // draw the actual scene
     void draw_scene_();
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    void replaceMaterialAndDrawScene(const Camera &camera, std::shared_ptr<Material> mat);
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     // parent widget
     QWidget* parent_;
@@ -93,11 +122,17 @@ protected:
     double angle = 0.0;
     bool rotationOn = true;
 
+    std::shared_ptr<Material> material_;
     // bg color
     QVector3D bgcolor_ = QVector3D(0.4f,0.4f,0.4f);
 
     // different materials to be demonstrated
     std::map<QString, std::shared_ptr<PhongMaterial>> phongMaterials_;
+    std::map<QString, std::shared_ptr<PhongMaterial>> mapOfPhongMaterials_;
+    std::map<QString, std::shared_ptr<ToonMaterial>> mapOfToonMaterials_;
+    std::map<QString, std::shared_ptr<PointMaterial>> mapOfPointMaterials_;
+
+    std::vector<std::shared_ptr<Material>> allMaterials_;
 
     // mesh(es) to be used / shared
     std::map<QString, std::shared_ptr<Mesh>> meshes_;
@@ -123,5 +158,6 @@ protected:
     void makeNodes();
     void makeScene();
 
+    QString currentSceneNode;//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 };
 

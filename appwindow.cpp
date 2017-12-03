@@ -15,6 +15,7 @@
 #include "appwindow.h"
 #include "ui_appwindow.h"
 #include "scene.h"
+#include "navigator/rotate_y.h"
 
 AppWindow::AppWindow(QWidget *parent) :
     QWidget(parent),
@@ -62,9 +63,33 @@ AppWindow::AppWindow(QWidget *parent) :
         scene().setBackgroundColor(QVector3D(1,1,1));
     });
 
+
+    connect(ui->radioButtonRotateX, &QRadioButton::clicked, [this](bool)
+    {
+               scene().setRotateAxis(RotateY::Axis::X);
+    });
+
+    connect(ui->radioButtonRotateY, &QRadioButton::clicked, [this](bool)
+    {
+               scene().setRotateAxis(RotateY::Axis::Y);
+    });
+
+
+    connect(ui->radioButtonRotateZ, &QRadioButton::clicked, [this](bool)
+    {
+               scene().setRotateAxis(RotateY::Axis::Z);
+    });
+
+
     connect(ui->modelComboBox, &QComboBox::currentTextChanged, [this](QString value)
     {
         scene().setSceneNode(value);
+    });
+
+
+    connect(ui->shaderComboBox, &QComboBox::currentTextChanged, [this](QString value)
+    {
+        scene().setShader(value);
     });
 
     connect(ui->light0Slider, &QSlider::valueChanged, [this](int value)
@@ -72,6 +97,41 @@ AppWindow::AppWindow(QWidget *parent) :
         scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
     });
 
+    connect(ui -> checkBoxSilhoutte, &QCheckBox::toggled,[this](bool enable) {
+        ui->threshold->setEnabled(enable);
+        scene().enableSilhoutte(enable);
+    });
+
+    connect(ui -> threshold,  &QSlider::valueChanged, [this](int value){
+         scene().setThreshold(float(value)/100); // slider goes from 0...100
+    });
+
+    connect(ui -> discretizer, &QSlider::valueChanged, [this](int value){
+         scene().setAmountOfDiscretiz(value);
+    });
+
+    connect(ui -> blueSlider, &QSlider::valueChanged, [this](int value){
+         scene().setBlueIntensity(float(value)/100);
+    });
+
+    connect(ui -> greenSlider, &QSlider::valueChanged, [this](int value){
+         scene().setGreenIntensity(float(value)/100);
+    });
+    connect(ui -> redSlider, &QSlider::valueChanged, [this](int value){
+         scene().setRedIntensity(float(value)/100);
+    });
+
+    connect(ui -> densitySlider, &QSlider::valueChanged, [this](int value){
+         scene().setDensity(float(value)/100);
+    });
+
+    connect(ui -> radiusSlider, &QSlider::valueChanged, [this](int value){
+         scene().setRadius(float(value)/100);
+    });
+
+    connect(ui -> checkBoxInvert, &QCheckBox::toggled,[this](bool enable){
+         scene().revertPoint(enable);
+    });
 }
 
 // called when the window is initially shown
@@ -89,9 +149,11 @@ void AppWindow::setDefaultUIValues() {
     ui->blackBgRadioButton->setChecked(true);
     ui->greyBgRadioButton->setChecked(true);
     ui->light0Slider->setValue(0);
-    ui->light0Slider->setValue(80);
-    ui->modelComboBox->setCurrentText("Cube");
+    ui->light0Slider->setValue(50);
+
+
     ui->modelComboBox->setCurrentText("Duck");
+    ui->shaderComboBox->setCurrentText("Toon");
 
 }
 

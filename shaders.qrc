@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>shaders/phong.frag</file>
         <file>shaders/phong.vert</file>
+        <file>shaders/point.frag</file>
+        <file>shaders/point.vert</file>
+        <file>shaders/toon.frag</file>
+        <file>shaders/toon.vert</file>
     </qresource>
 </RCC>

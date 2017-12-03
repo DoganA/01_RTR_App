@@ -25,7 +25,11 @@ HEADERS      += \
     navigator/nodenavigator.h \ 
     material/phong.h \
     navigator/position_navigator.h \
-    navigator/rotate_y.h
+    navigator/rotate_y.h \
+    material/point.h \
+    material/toon.h \
+    material/point.h \
+    material/toon.h
 
 # C++ SOURCE FILES TO BE COMPILED AND LINKED TOGETHER
 SOURCES      += \
@@ -45,7 +49,9 @@ SOURCES      += \
     navigator/nodenavigator.cpp \ 
     material/phong.cpp \
     navigator/position_navigator.cpp \
-    navigator/rotate_y.cpp
+    navigator/rotate_y.cpp \
+    material/point.cpp \
+    material/toon.cpp
 
 # RESOURCE FILES TO BE PROCESSED BY QT
 RESOURCES    += \

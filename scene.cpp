@@ -5,7 +5,7 @@
 #include <random>   // random number generation
 
 #include "geometry/cube.h" // geom::Cube
-
+#include "Material/toon.h"
 #include <QtMath>
 #include <QMessageBox>
 
@@ -184,7 +184,39 @@ void Scene::draw_scene_()
         glDepthFunc(GL_EQUAL);
     }
 }
+//-----------------------------------------------------------------------------
+void Scene::replaceMaterialAndDrawScene(const Camera& camera, shared_ptr<Material> material)
+//-----------------------------------------------------------------------------
+{
+    // replace material in all meshes, if necessary
+    if(material != meshes_.begin()->second->material()) {
+         qDebug() << "replacing material "+ material->getAppliedShader();
+        for (auto& element : meshes_) {
+            auto mesh = element.second;
+            mesh->replaceMaterial(material);
+        }
+    }
 
+    // draw one pass for each light
+    // TODO: wireframe and vector materials always only require one pass
+    for(unsigned int i=0; i<lightNodes_.size(); i++) {
+
+        // qDebug() << "drawing light pass" << i;
+
+        // determine current light position and set it in all materials
+        QMatrix4x4 lightToWorld = nodes_["World"]->toParentTransform(lightNodes_[i]);
+        material_->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
+
+        // draw light pass i
+        nodes_["World"]->draw(camera, i);
+
+        // settings for i>0 (add light contributions using alpha blending)
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE,GL_ONE);
+        glDepthFunc(GL_EQUAL);
+    }
+
+}
 // helper to load shaders and create programs
 shared_ptr<QOpenGLShaderProgram> Scene::createProgram(const string& vertex,
                                                       const string& fragment,
@@ -238,7 +270,149 @@ void Scene::setSceneNode(QString node)
 
     update();
 }
+//-----------------------------------------------------------------------------
+QString Scene::getCurrentSceneNode()
+//-----------------------------------------------------------------------------
+{
+    return currentSceneNode;
+}
+//-----------------------------------------------------------------------------
+void Scene::setShader(QString shader)
+//-----------------------------------------------------------------------------
+{
 
+    shader = shader.toLower();
+    bool isToonShader = "toon" == shader;
+    qDebug()<<"toonShader shader is " << isToonShader;
+
+//   std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+//   if("toon" == material ->getAppliedShader()){
+//        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+//       tm -> toonShader.toon = isToonShader;
+
+//   }
+    for(auto mat: allMaterials_)
+    {
+        if(mat->getAppliedShader() == shader)
+        {
+            ToonMaterial* toonMaterial = mapOfToonMaterials_["Color_Toon"].get();
+            toonMaterial->toonShader.toon = isToonShader;
+            qDebug()<<"Used shader is " << mat -> getAppliedShader();
+        }
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::enableSilhoutte(bool enable)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+
+
+    if("toon" == material ->getAppliedShader()){
+        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+        tm -> toonShader.silhoutte = enable;
+        qDebug()<<"Used silhoutte is " << enable;
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setThreshold(float threshold)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+    if("toon" == material ->getAppliedShader()){
+        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+        tm -> toonShader.threshold = threshold;
+        qDebug()<<"Used silhoutte is " << threshold;
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setAmountOfDiscretiz(int amount)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+    if("toon" == material ->getAppliedShader())
+    {
+        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+        tm -> toonShader.discretize=amount;
+        qDebug()<<"Used silhoutte is " << amount;
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setBlueIntensity(float blueIntensitiy)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+    for(unsigned int i=0; i<lightNodes_.size(); i++)
+    {
+        material->lights[i].color.setZ(blueIntensitiy);
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setRedIntensity(float redIntensitiy)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+    for(unsigned int i=0; i<lightNodes_.size(); i++)
+    {
+        material->lights[i].color.setX(redIntensitiy);
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setGreenIntensity(float greenIntensitiy)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+    for(unsigned int i=0; i<lightNodes_.size(); i++)
+    {
+        material->lights[i].color.setY(greenIntensitiy);
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setRadius(float radius)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material = meshes_[getCurrentSceneNode()] ->material();
+    if("point" == material ->getAppliedShader())
+    {
+        PointMaterial* tm = mapOfPointMaterials_["point"].get();
+        tm -> texture.radius=radius;
+        qDebug()<<"radius is set to " << radius;
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::setDensity(float density)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
+    if("point" == material ->getAppliedShader())
+    {
+        PointMaterial* tm = mapOfPointMaterials_["point"].get();
+        tm -> texture.density=density;
+        qDebug()<<"Denity is set to " << density;
+    }
+    update();
+}
+//-----------------------------------------------------------------------------
+void Scene::revertPoint(bool  revert)
+//-----------------------------------------------------------------------------
+{
+    std::shared_ptr<Material> material = meshes_[getCurrentSceneNode()] ->material();
+    if("point" == material ->getAppliedShader())
+    {
+        PointMaterial* tm = mapOfPointMaterials_["point"].get();
+        tm -> texture.shouldDiscard=revert;
+        qDebug()<<"revert is set to " << revert;
+    }
+    update();
+}
 // change background color
 void Scene::setBackgroundColor(QVector3D rgb) {
     bgcolor_ = rgb; update();
@@ -250,8 +424,8 @@ void Scene::setLightIntensity(size_t i, float v)
     if(i>=lightNodes_.size())
         return;
 
-    for(auto mat : phongMaterials_)
-        mat.second->lights[i].intensity = v; update();
+    for(auto mat : allMaterials_)
+        mat->lights[i].intensity = v; update();
 }
 
 // pass key/mouse events on to navigator objects
@@ -284,6 +458,11 @@ void Scene::update()
 void Scene::updateViewport(size_t width, size_t height)
 {
     glViewport(0,0,GLint(width),GLint(height));
+}
+
+void Scene::setRotateAxis(RotateY::Axis axis)
+{
+     cameraNavigator_->setRotateAxis(axis);
 }
 
 
