@@ -111,16 +111,16 @@ void RotateY::updateTransformation_()
     QMatrix4x4 mat;
 
     // third, rotate around Y axis
-    mat.rotate(rotation_angle_, rotateVector);
+    mat.rotate(rotation_angle_, QVector3D(0,1,0));
 
-    QVector3D qvector = getQVector3DOfAxis( );
     // second, elevate node above X-Z axis by rotating around -X
-    mat.rotate(elevation_angle_, qvector);
+    mat.rotate(elevation_angle_, QVector3D(-1,0,0));
 
     // first, translate along camera axis
     mat.translate(0, 0, distance_to_center_);
 
     // update matrix in camera node
     node_->transformation = mat;
+
 }
 

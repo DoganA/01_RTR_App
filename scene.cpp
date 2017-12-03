@@ -54,18 +54,38 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
 
 void Scene::makeNodes()
 {
+    //TODO : überarbeiten
     // load shader source files and compile them into OpenGL program objects
     auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
+    auto toon_prog = createProgram(":/shaders/toon.vert", ":/shaders/toon.frag");
+    auto point_prog = createProgram(":/shaders/point.vert", ":/shaders/point.frag");
 
-    // Phong materials
+    // create required materials
     auto red = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["red"] = red;
+    auto phong = std::make_shared<PhongMaterial>(phong_prog);
+    auto color_toon = std::make_shared<ToonMaterial>(toon_prog);
+    auto point = std::make_shared<PointMaterial>(point_prog);
+
+    mPhongMaterials_["red"] = red;
+    mPhongMaterials_["phong"] = red;
+    mPointMaterials_["point"] = red;
+    mToonMaterials_["toon"] = red;
+
+    // store materials in map container
+    materials_.push_back(phong);
+    materials_.push_back(color_toon);
+    materials_.push_back(point);
+
+    material_ = red;
+
+
+    mPhongMaterials_["red"] = red;
     red->phong.k_diffuse = QVector3D(0.8f,0.1f,0.1f);
     red->phong.k_ambient = red->phong.k_diffuse * 0.3f;
     red->phong.shininess = 80;
 
     auto goblin_Material = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["goblin_Material"] = goblin_Material;
+    mPhongMaterials_["goblin_Material"] = goblin_Material;
     goblin_Material->phong.k_diffuse = QVector3D(0.8f,0.6f,0.1f);
     goblin_Material->phong.k_ambient = red->phong.k_diffuse * 0.4f;
     goblin_Material->phong.shininess = 90;
@@ -136,9 +156,10 @@ void Scene::draw()
 
     // set time uniform in animated shader(s)
     float t = millisec_since_first_draw.count() / 1000.0f;
-
-    for(auto mat : phongMaterials_)
+    for(auto mat: mPhongMaterials_)
+    {
         mat.second->time = t;
+    }
 
     draw_scene_();
 }
@@ -170,7 +191,7 @@ void Scene::draw_scene_()
 
         // determine current light position and set it in all materials
         QMatrix4x4 lightToWorld = nodes_["World"]->toParentTransform(lightNodes_[i]);
-        for(auto mat : phongMaterials_) {
+        for(auto mat : mPhongMaterials_) {
             auto phong = mat.second; // mat is of type (key, value)
             phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
         }
@@ -291,11 +312,11 @@ void Scene::setShader(QString shader)
 //       tm -> toonShader.toon = isToonShader;
 
 //   }
-    for(auto mat: allMaterials_)
+    for(auto mat: materials_)
     {
         if(mat->getAppliedShader() == shader)
         {
-            ToonMaterial* toonMaterial = mapOfToonMaterials_["Color_Toon"].get();
+            ToonMaterial* toonMaterial = mToonMaterials_["toon"].get();
             toonMaterial->toonShader.toon = isToonShader;
             qDebug()<<"Used shader is " << mat -> getAppliedShader();
         }
@@ -310,7 +331,7 @@ void Scene::enableSilhoutte(bool enable)
 
 
     if("toon" == material ->getAppliedShader()){
-        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+        ToonMaterial* tm = mToonMaterials_["toon"].get();
         tm -> toonShader.silhoutte = enable;
         qDebug()<<"Used silhoutte is " << enable;
     }
@@ -322,7 +343,7 @@ void Scene::setThreshold(float threshold)
 {
     std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
     if("toon" == material ->getAppliedShader()){
-        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+        ToonMaterial* tm = mToonMaterials_["toon"].get();
         tm -> toonShader.threshold = threshold;
         qDebug()<<"Used silhoutte is " << threshold;
     }
@@ -335,7 +356,7 @@ void Scene::setAmountOfDiscretiz(int amount)
     std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
     if("toon" == material ->getAppliedShader())
     {
-        ToonMaterial* tm = mapOfToonMaterials_["color_toon"].get();
+        ToonMaterial* tm = mToonMaterials_["toon"].get();
         tm -> toonShader.discretize=amount;
         qDebug()<<"Used silhoutte is " << amount;
     }
@@ -381,7 +402,7 @@ void Scene::setRadius(float radius)
     std::shared_ptr<Material>  material = meshes_[getCurrentSceneNode()] ->material();
     if("point" == material ->getAppliedShader())
     {
-        PointMaterial* tm = mapOfPointMaterials_["point"].get();
+        PointMaterial* tm = mPointMaterials_["point"].get();
         tm -> texture.radius=radius;
         qDebug()<<"radius is set to " << radius;
     }
@@ -394,7 +415,7 @@ void Scene::setDensity(float density)
     std::shared_ptr<Material>  material =  meshes_[getCurrentSceneNode()] ->material();
     if("point" == material ->getAppliedShader())
     {
-        PointMaterial* tm = mapOfPointMaterials_["point"].get();
+        PointMaterial* tm = mPointMaterials_["point"].get();
         tm -> texture.density=density;
         qDebug()<<"Denity is set to " << density;
     }
@@ -407,7 +428,7 @@ void Scene::revertPoint(bool  revert)
     std::shared_ptr<Material> material = meshes_[getCurrentSceneNode()] ->material();
     if("point" == material ->getAppliedShader())
     {
-        PointMaterial* tm = mapOfPointMaterials_["point"].get();
+        PointMaterial* tm = mPointMaterials_["point"].get();
         tm -> texture.shouldDiscard=revert;
         qDebug()<<"revert is set to " << revert;
     }
@@ -424,7 +445,7 @@ void Scene::setLightIntensity(size_t i, float v)
     if(i>=lightNodes_.size())
         return;
 
-    for(auto mat : allMaterials_)
+    for(auto mat : materials_)
         mat->lights[i].intensity = v; update();
 }
 

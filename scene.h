@@ -127,12 +127,11 @@ protected:
     QVector3D bgcolor_ = QVector3D(0.4f,0.4f,0.4f);
 
     // different materials to be demonstrated
-    std::map<QString, std::shared_ptr<PhongMaterial>> phongMaterials_;
-    std::map<QString, std::shared_ptr<PhongMaterial>> mapOfPhongMaterials_;
-    std::map<QString, std::shared_ptr<ToonMaterial>> mapOfToonMaterials_;
-    std::map<QString, std::shared_ptr<PointMaterial>> mapOfPointMaterials_;
+    std::map<QString, std::shared_ptr<PhongMaterial>> mPhongMaterials_;
+    std::map<QString, std::shared_ptr<ToonMaterial>> mToonMaterials_;
+    std::map<QString, std::shared_ptr<PointMaterial>> mPointMaterials_;
 
-    std::vector<std::shared_ptr<Material>> allMaterials_;
+    std::vector<std::shared_ptr<Material>> materials_;
 
     // mesh(es) to be used / shared
     std::map<QString, std::shared_ptr<Mesh>> meshes_;
