@@ -29,9 +29,9 @@ public:
 
     struct Texture {
        int density = 5;
-       float radius = 0.3;
-       QVector3D circleColor = QVector3D(0.6,0.2,0.8);
-       QVector3D backgroundColor = QVector3D(0.3,0.4,0.6);
+       float radius = 0.3f;
+       QVector3D circleColor = QVector3D(0.6f, 0.2f, 0.8f);
+       QVector3D backgroundColor = QVector3D(0.3f, 0.4f, 0.6f);
     } texture;
 
 };
