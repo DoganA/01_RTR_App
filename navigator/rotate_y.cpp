@@ -94,14 +94,14 @@ QVector3D RotateY::getQVector3DOfAxis(){
 
 
     switch (getRotateAxis()) {
-    case X:
-        return  QVector3D(-1,0,0);
-     case Y:
-        return  QVector3D(0,-1,0);
-    case Z:
-        return  QVector3D(0,0,-1);
-    default:
-         return  rotateVector;
+        case X:
+            return  QVector3D(-1,0,0);
+        case Y:
+            return  QVector3D(0,-1,0);
+        case Z:
+            return  QVector3D(0,0,-1);
+        default:
+            return  rotateVector;
     }
 
 }
@@ -111,10 +111,11 @@ void RotateY::updateTransformation_()
     QMatrix4x4 mat;
 
     // third, rotate around Y axis
-    mat.rotate(rotation_angle_, QVector3D(0,1,0));
+    mat.rotate(rotation_angle_, rotateVector);
 
+    QVector3D qvector = getQVector3DOfAxis( );
     // second, elevate node above X-Z axis by rotating around -X
-    mat.rotate(elevation_angle_, QVector3D(-1,0,0));
+    mat.rotate(elevation_angle_, qvector);
 
     // first, translate along camera axis
     mat.translate(0, 0, distance_to_center_);
