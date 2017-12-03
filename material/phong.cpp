@@ -24,6 +24,8 @@ void PhongMaterial::apply(unsigned int light_pass)
     prog_->setUniformValue("phong.shininess",  phong.shininess);
 
 }
-
+QString PhongMaterial::getAppliedShader(){
+    return "phong";
+}
 
 

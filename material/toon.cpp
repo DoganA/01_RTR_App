@@ -22,7 +22,6 @@ void ToonMaterial::apply(unsigned int light_pass)
 
 
 
-QString
-ToonMaterial::getAppliedShader(){
+QString ToonMaterial::getAppliedShader(){
     return "toon";
 }

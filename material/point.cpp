@@ -12,8 +12,7 @@ void PointMaterial::apply(unsigned int light_pass)
 
 }
 
-QString
-PointMaterial::getAppliedShader(){
+QString PointMaterial::getAppliedShader(){
     return "point";
 }
 

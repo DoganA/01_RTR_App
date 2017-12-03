@@ -115,52 +115,12 @@
                </item>
                <item>
                 <property name="text">
-                 <string>F117_H</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Alien</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Cube</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Obiwan</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Goblin</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
                  <string>Duck</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Venus</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Buddha</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Dragon</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Sphere</string>
+                 <string>Goblin</string>
                 </property>
                </item>
               </widget>
